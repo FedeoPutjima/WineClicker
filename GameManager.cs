@@ -71,6 +71,14 @@ public class GameManager : MonoBehaviour
     //SAVING
     public GameObject saveText;
 
+    //CONSTANTS
+    float TIME_BETWEEN_SAVES = 15f;
+    float TIME_BETWEEN_WEATHER_CHANGE = 30f;
+    float LOWEST_WINE_PRICE = 0.5f;
+    float LOWER_WINE_PRICE = 0.75f;
+    float HIGHEST_WINE_PRICE = 2f;
+    float HIGHER_WINE_PRICE = 1.5f;
+
 
     void Awake()
     {
@@ -372,7 +380,7 @@ public class GameManager : MonoBehaviour
     {
         SaveTheGame();
         saveText.SetActive(true);
-        Invoke(nameof(AutoSave), 15f);
+        Invoke(nameof(AutoSave), TIME_BETWEEN_SAVES);
     }
 
     void LoadTheGame()
@@ -473,36 +481,36 @@ public class GameManager : MonoBehaviour
         if (randomWeather == 1)
         {
             background.sprite = winter;
-            weatherRedWineSellCost = baseRedWineSellCost * 2f;
-            weatherRoseWineSellCost = baseRoseWineSellCost * 0.5f;
-            weatherWhiteWineSellCost = baseWhiteWineSellCost * 1.1f;
+            weatherRedWineSellCost = baseRedWineSellCost * HIGHEST_WINE_PRICE;
+            weatherRoseWineSellCost = baseRoseWineSellCost * LOWEST_WINE_PRICE;
+            weatherWhiteWineSellCost = baseWhiteWineSellCost * HIGHER_WINE_PRICE;
             Debug.Log("It's winter!");
         }
         else if (randomWeather == 2)
         {
             background.sprite = spring;
-            weatherRedWineSellCost = baseRedWineSellCost * 1f;
-            weatherRoseWineSellCost = baseRoseWineSellCost * 0.75f;
-            weatherWhiteWineSellCost = baseWhiteWineSellCost * 1.5f;
+            weatherRedWineSellCost = baseRedWineSellCost;
+            weatherRoseWineSellCost = baseRoseWineSellCost * LOWER_WINE_PRICE;
+            weatherWhiteWineSellCost = baseWhiteWineSellCost * HIGHER_WINE_PRICE;
             Debug.Log("It's spring!");
         }
         else if (randomWeather == 3)
         {
             background.sprite = summer;
-            weatherRedWineSellCost = baseRedWineSellCost * 0.5f;
-            weatherRoseWineSellCost = baseRoseWineSellCost * 2f;
-            weatherWhiteWineSellCost = baseWhiteWineSellCost * 1.5f;
+            weatherRedWineSellCost = baseRedWineSellCost * LOWEST_WINE_PRICE;
+            weatherRoseWineSellCost = baseRoseWineSellCost * HIGHEST_WINE_PRICE;
+            weatherWhiteWineSellCost = baseWhiteWineSellCost * HIGHER_WINE_PRICE;
             Debug.Log("It's summer!");
         }
         else if (randomWeather == 4)
         {
             background.sprite = fall;
-            weatherRedWineSellCost = baseRedWineSellCost * 1.5f;
-            weatherRoseWineSellCost = baseRoseWineSellCost * 0.75f;
-            weatherWhiteWineSellCost = baseWhiteWineSellCost * 1f;
+            weatherRedWineSellCost = baseRedWineSellCost * HIGHER_WINE_PRICE;
+            weatherRoseWineSellCost = baseRoseWineSellCost * LOWER_WINE_PRICE;
+            weatherWhiteWineSellCost = baseWhiteWineSellCost;
             Debug.Log("It's fall!");
         }
         else return;
-        Invoke(nameof(RandomizeWeather), 30f);
+        Invoke(nameof(RandomizeWeather), TIME_BETWEEN_WEATHER_CHANGE);
     }
 }
