@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public float money;
     public Text totalMoneyText;
     public Text totalBpsText;
-    
+
 
     //everything about berries
     [Header("BERRIES")]
@@ -42,18 +42,21 @@ public class GameManager : MonoBehaviour
     public float baseRedWineSellCost;
     public float weatherRedWineSellCost;
     public Text redWineText;
+    public Text berriesToRedWineCost;
 
     public int whiteWineCost;
     public int whiteWineBottlesAmount;
     public float baseWhiteWineSellCost;
     public float weatherWhiteWineSellCost;
     public Text whiteWineText;
+    public Text berriesToWhiteWineCost;
 
     public int roseWineCost;
     public int roseWineBottlesAmount;
     public float baseRoseWineSellCost;
     public float weatherRoseWineSellCost;
     public Text roseWineText;
+    public Text berriesToRoseWineCost;
 
     //everything about the weather
     [Header("WEATHER")]
@@ -102,20 +105,21 @@ public class GameManager : MonoBehaviour
         UpdateRoseWineUI();
         UpdateWhiteWineUI();
         StartCoroutine(Tick());
+        SetBerriesToWineCost();
         RandomizeWeather();
         AutoSave();
     }
 
     IEnumerator Tick()
     {
-        while(true)
+        while (true)
         {
             yield return new WaitForSeconds(1);
             foreach (AnyPowerUp p in powerUpList)
             {
                 if (p.powerUpAmount > 0)
                 {
-                    berries += p.powerUp.baseIncome;
+                    berries += p.powerUp.baseIncome * p.powerUpAmount;
                     berries = (float)Mathf.Round(berries * 100) / 100;
                     //Update berries UI
                     UpdateBerriesUI();
@@ -145,7 +149,7 @@ public class GameManager : MonoBehaviour
                         powerUpList[i].holder.powerUpName.text = powerUpList[i].powerUp.powerUpName;
                         powerUpList[i].holder.amountText.text = "Amount: " + powerUpList[i].powerUpAmount.ToString("N0");
                         powerUpList[i].holder.bpsText.text = "Pick Power: " + 1.ToString("N2");
-                        powerUpList[i].holder.costText.text = "Cost: " + powerUpList[i].powerUp.CalculateCost(powerUpList[i].powerUpAmount).ToString("N2");
+                        powerUpList[i].holder.costText.text = "Cost: " + powerUpList[i].powerUp.CalculateCost(powerUpList[i].powerUpAmount).ToString("N2") + "$";
                     }
                     else
                     {
@@ -153,7 +157,7 @@ public class GameManager : MonoBehaviour
                         powerUpList[i].holder.powerUpName.text = powerUpList[i].powerUp.powerUpName;
                         powerUpList[i].holder.amountText.text = "Amount: " + powerUpList[i].powerUpAmount.ToString("N0");
                         powerUpList[i].holder.bpsText.text = "BPS: " + powerUpList[i].powerUp.baseIncome.ToString("N2");
-                        powerUpList[i].holder.costText.text = "Cost: " + powerUpList[i].powerUp.CalculateCost(powerUpList[i].powerUpAmount).ToString("N2");
+                        powerUpList[i].holder.costText.text = "Cost: " + powerUpList[i].powerUp.CalculateCost(powerUpList[i].powerUpAmount).ToString("N2") + "$";
                     }
                 }
                 else
@@ -161,8 +165,8 @@ public class GameManager : MonoBehaviour
                     powerUpList[i].holder.powerUpImage.sprite = powerUpList[i].powerUp.unknownPowerUpImage;
                     powerUpList[i].holder.powerUpName.text = "????";
                     powerUpList[i].holder.amountText.text = "Amount: " + powerUpList[i].powerUpAmount.ToString("N0");
-                    powerUpList[i].holder.bpsText.text = "BPS: " + powerUpList[i].powerUp.baseIncome.ToString("N2"); 
-                    powerUpList[i].holder.costText.text = "Cost: " + powerUpList[i].powerUp.CalculateCost(powerUpList[i].powerUpAmount).ToString("N2"); 
+                    powerUpList[i].holder.bpsText.text = "BPS: " + powerUpList[i].powerUp.baseIncome.ToString("N2");
+                    powerUpList[i].holder.costText.text = "Cost: " + powerUpList[i].powerUp.CalculateCost(powerUpList[i].powerUpAmount).ToString("N2") + "$";
                 }
 
                 powerUpList[i].holder.buyButton.id = i;
@@ -194,18 +198,18 @@ public class GameManager : MonoBehaviour
         {
             powerUpList[id].holder.amountText.text = "Amount: " + powerUpList[id].powerUpAmount.ToString("N0");
             powerUpList[id].holder.bpsText.text = "Pick Power: " + 1.ToString("N2");
-            powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2");
+            powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2") + "$";
             grape.GetComponent<GrapeBerry>().clickAmount++;
         }
         else
         {
             powerUpList[id].holder.amountText.text = "Amount: " + powerUpList[id].powerUpAmount.ToString("N0");
             powerUpList[id].holder.bpsText.text = "BPS: " + powerUpList[id].powerUp.baseIncome.ToString("N2");
-            powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2");
+            powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2") + "$";
         }
-        
+
         //Unlock next power up
-        if(id < powerUpList.Count-1 && powerUpList[id].powerUpAmount > 0)
+        if (id < powerUpList.Count - 1 && powerUpList[id].powerUpAmount > 0)
         {
             powerUpList[id + 1].unlocked = true;
             FillList();
@@ -344,7 +348,7 @@ public class GameManager : MonoBehaviour
 
     void UpdateMoneyUI()
     {
-        totalMoneyText.text = "Total Money: " + money.ToString("N2");
+        totalMoneyText.text = "Total Money: " + money.ToString("N2") + "$";
     }
 
     void UpdateClickPowerUI()
@@ -372,7 +376,7 @@ public class GameManager : MonoBehaviour
     void SaveTheGame()
     {
         SaveLoad.Save(powerUpList[0].powerUpAmount, powerUpList[1].powerUpAmount, powerUpList[2].powerUpAmount, powerUpList[3].powerUpAmount, powerUpList[4].powerUpAmount,
-            powerUpList[5].powerUpAmount, powerUpList[6].powerUpAmount, powerUpList[7].powerUpAmount, powerUpList[8].powerUpAmount, money, berries, 
+            powerUpList[5].powerUpAmount, powerUpList[6].powerUpAmount, powerUpList[7].powerUpAmount, powerUpList[8].powerUpAmount, money, berries,
             redWineBottlesAmount, whiteWineBottlesAmount, roseWineBottlesAmount);
     }
 
@@ -407,6 +411,12 @@ public class GameManager : MonoBehaviour
                     FillSinglePowerUp(i);
                 }
             }
+            //load the data for pick power
+            grape.GetComponent<GrapeBerry>().clickAmount = int.Parse(stringList[0]);
+            if (grape.GetComponent<GrapeBerry>().clickAmount == 0)
+            {
+                grape.GetComponent<GrapeBerry>().clickAmount = 1;
+            }          
             //load the data for total money
             money = float.Parse(stringList[9]);
             //load the data for total berries
@@ -442,7 +452,7 @@ public class GameManager : MonoBehaviour
                     powerUpList[id].holder.powerUpName.text = powerUpList[id].powerUp.powerUpName;
                     powerUpList[id].holder.amountText.text = "Amount: " + powerUpList[id].powerUpAmount.ToString("N0");
                     powerUpList[id].holder.bpsText.text = "Pick Power " + 1.ToString("N2");
-                    powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2");
+                    powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2") + "$";
                 }
                 else
                 {
@@ -450,7 +460,7 @@ public class GameManager : MonoBehaviour
                     powerUpList[id].holder.powerUpName.text = powerUpList[id].powerUp.powerUpName;
                     powerUpList[id].holder.amountText.text = "Amount: " + powerUpList[id].powerUpAmount.ToString("N0");
                     powerUpList[id].holder.bpsText.text = "BPS: " + powerUpList[id].powerUp.baseIncome.ToString("N2");
-                    powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2");
+                    powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2") + "$";
                 }
             }
             else
@@ -459,7 +469,7 @@ public class GameManager : MonoBehaviour
                 powerUpList[id].holder.powerUpName.text = "????";
                 powerUpList[id].holder.amountText.text = "Amount: " + powerUpList[id].powerUpAmount.ToString("N0");
                 powerUpList[id].holder.bpsText.text = "BPS: " + powerUpList[id].powerUp.baseIncome.ToString("N2");
-                powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2");
+                powerUpList[id].holder.costText.text = "Cost: " + powerUpList[id].powerUp.CalculateCost(powerUpList[id].powerUpAmount).ToString("N2") + "$";
             }
 
             powerUpList[id].holder.buyButton.id = id;
@@ -477,7 +487,7 @@ public class GameManager : MonoBehaviour
 
     void RandomizeWeather()
     {
-        int randomWeather = Random.Range(1, 4);
+        int randomWeather = Random.Range(1, 5);
         if (randomWeather == 1)
         {
             background.sprite = winter;
@@ -513,4 +523,12 @@ public class GameManager : MonoBehaviour
         else return;
         Invoke(nameof(RandomizeWeather), TIME_BETWEEN_WEATHER_CHANGE);
     }
+
+    void SetBerriesToWineCost()
+    {
+        berriesToRedWineCost.text = redWineCost + " Berries";
+        berriesToRoseWineCost.text = roseWineCost + " Berries";
+        berriesToWhiteWineCost.text = whiteWineCost + " Berries";
+    }
+
 }

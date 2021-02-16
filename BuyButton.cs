@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BuyButton : MonoBehaviour
 {
-    [HideInInspector]public int id;
+    public int id;
     public int bottlesOfRedWine;
     public int bottlesOfWhiteWine;
     public int bottlesOfRoseWine;

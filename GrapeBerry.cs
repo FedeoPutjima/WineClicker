@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class GrapeBerry : MonoBehaviour
 {
-    [HideInInspector] public int clickAmount;
+    [HideInInspector] public int clickAmount = 1;
     Animator anim;
     public GameObject popUpTextPrefab;
 
     void Start()
     {
-        clickAmount = 1;
         anim = GetComponent<Animator>();
     }
 
